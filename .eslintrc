@@ -26,7 +26,8 @@
     "no-restricted-globals": "off",
     "import/prefer-default-export": "warn",
     "import/no-unresolved": "warn",
-    "no-bitwise": "off"
+    "no-bitwise": "off",
+    "no-case-declarations": "off"
   },
   "env": {
     "jest/globals": true,
