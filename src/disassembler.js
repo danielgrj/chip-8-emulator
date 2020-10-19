@@ -19,14 +19,14 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'CLS',
-              description: 'Clear screan',
+              description: 'Clear screen',
             });
             break;
           case 0xee:
             instructions.push({
               loc,
               opCode,
-              nemonic: 'RTS',
+              nemonic: 'RET',
               description: 'Return from subrutine',
             });
             break;
@@ -44,7 +44,7 @@ export default function disassembler(rom) {
         instructions.push({
           loc,
           opCode,
-          nemonic: 'JP',
+          nemonic: 'JP addr',
           description: `Jump to address ${formatHex(op & 0x0fff, {
             digits: 3,
             prefix: true,
@@ -55,8 +55,11 @@ export default function disassembler(rom) {
         instructions.push({
           loc,
           opCode,
-          nemonic: 'CALL',
-          description: `Call subrutine at address ${formatHex(op & 0x0fff)}`,
+          nemonic: 'CALL addr',
+          description: `Call subrutine at address ${formatHex(op & 0x0fff, {
+            digits: 3,
+            prefix: true,
+          })}`,
         });
         break;
       case 0x03:
@@ -88,7 +91,7 @@ export default function disassembler(rom) {
           loc,
           opCode,
           nemonic: 'LD Vx, byte',
-          description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(sByte)}`,
+          description: `Set V${formatHex(fByte & 0x0f)} = ${formatHex(sByte)}`,
         });
         break;
       case 0x07:
@@ -122,7 +125,9 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'AND Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} AND V${formatHex(sByte >> 4)}`,
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} AND V${formatHex(
+                sByte >> 4,
+              )}`,
             });
             break;
           case 0x3:
@@ -130,15 +135,19 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'XOR Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} XOR V${formatHex(sByte >> 4)}`,
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} XOR V${formatHex(
+                sByte >> 4,
+              )}`,
             });
             break;
           case 0x4:
             instructions.push({
               loc,
               opCode,
-              nemonic: 'AND Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} + V${formatHex(sByte >> 4)}, set VF = carry`,
+              nemonic: 'ADD Vx, Vy',
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} + V${formatHex(
+                sByte >> 4,
+              )}, set VF = carry`,
             });
             break;
           case 0x5:
@@ -146,14 +155,16 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'SUB Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} - V${formatHex(sByte >> 4)}, set VF = NOT borrow`,
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} - V${formatHex(
+                sByte >> 4,
+              )}, set VF = NOT borrow`,
             });
             break;
           case 0x6:
             instructions.push({
               loc,
               opCode,
-              nemonic: 'SHR Vx, Vy',
+              nemonic: 'SHR Vx {, Vy}',
               description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} SHR 1`,
             });
 
@@ -163,15 +174,17 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'SUBN Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(sByte >> 4)} - V${formatHex(fByte & 0x0f)}, set VF = NOT borrow`,
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(sByte >> 4)} - V${formatHex(
+                fByte & 0x0f,
+              )}, set VF = NOT borrow`,
             });
             break;
           case 0xe:
             instructions.push({
               loc,
               opCode,
-              nemonic: 'SUBN Vx, Vy',
-              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(sByte >> 4)} SHL 1`,
+              nemonic: 'SHL Vx {, Vy}',
+              description: `Set V${formatHex(fByte & 0x0f)} = V${formatHex(fByte & 0x0f)} SHL 1`,
             });
             break;
           default:
@@ -219,7 +232,7 @@ export default function disassembler(rom) {
           loc,
           opCode,
           nemonic: 'RND Vx, byte',
-          description: `Set V${formatHex(fByte & 0x0f)} to ${formatHex(sByte)} AND random byte`,
+          description: `Set V${formatHex(fByte & 0x0f)} = random byte AND ${formatHex(sByte)}`,
         });
         break;
       case 0x0d:
@@ -227,9 +240,9 @@ export default function disassembler(rom) {
           loc,
           opCode,
           nemonic: 'DRW Vx, Vy, nibble',
-          description: `Display ${formatHex(sByte & 0x0f)}-byte sprite starting at memory location I at (V${formatHex(fByte & 0x0f)}, V${formatHex(
-            sByte >> 4,
-          )}), set VF = collision.`,
+          description: `Display ${formatHex(sByte & 0x0f)}-byte sprite starting at memory location I at (V${formatHex(
+            fByte & 0x0f,
+          )}, V${formatHex(sByte >> 4)}), set VF = collision`,
         });
         break;
       case 0x0e:
@@ -239,7 +252,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'SKP Vx',
-              description: `Skip next instruction if key V${formatHex(sByte & 0x0f)} is pressed.`,
+              description: `Skip next instruction if key V${formatHex(fByte & 0x0f)} is pressed`,
             });
             break;
           case 0xa1:
@@ -247,7 +260,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'SKNP Vx',
-              description: `Skip next instruction if key V${formatHex(sByte & 0x0f)} is not pressed.`,
+              description: `Skip next instruction if key V${formatHex(fByte & 0x0f)} is not pressed`,
             });
             break;
           default:
@@ -267,7 +280,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'LD Vx, DT',
-              description: `Set V${formatHex(fByte & 0x0f)} = delay timer value.`,
+              description: `Set V${formatHex(fByte & 0x0f)} = delay timer value`,
             });
             break;
           case 0x0a:
@@ -283,7 +296,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'LD DT, Vx',
-              description: `Set delay timer = V${formatHex(fByte & 0x0f)}.`,
+              description: `Set delay timer = V${formatHex(fByte & 0x0f)}`,
             });
             break;
           case 0x18:
@@ -291,7 +304,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'LD ST, Vx',
-              description: `Set sound timer = V${formatHex(fByte & 0x0f)}.`,
+              description: `Set sound timer = V${formatHex(fByte & 0x0f)}`,
             });
             break;
           case 0x1e:
@@ -299,7 +312,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'ADD I, Vx',
-              description: `Set I = I + V${formatHex(fByte & 0x0f)}.`,
+              description: `Set I = I + V${formatHex(fByte & 0x0f)}`,
             });
             break;
           case 0x29:
@@ -307,15 +320,17 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'LD F, Vx',
-              description: `Set I = location of sprite for digit V${formatHex(fByte & 0x0f)}.`,
+              description: `Set I = location of sprite for digit V${formatHex(fByte & 0x0f)}`,
             });
             break;
           case 0x33:
             instructions.push({
               loc,
               opCode,
-              nemonic: 'LD F, Vx',
-              description: `Store BCD representation of V${formatHex(fByte & 0x0f)} in memory locations I, I+1, and I+2`,
+              nemonic: 'LD B, Vx',
+              description: `Store BCD representation of V${formatHex(
+                fByte & 0x0f,
+              )} in memory locations I, I+1, and I+2`,
             });
             break;
           case 0x55:
@@ -331,7 +346,7 @@ export default function disassembler(rom) {
               loc,
               opCode,
               nemonic: 'LD Vx, [I]',
-              description: `Read registers V0 through V${formatHex(fByte & 0x0f)} in memory starting at location I`,
+              description: `Read registers V0 through V${formatHex(fByte & 0x0f)} from memory starting at location I`,
             });
             break;
           default:

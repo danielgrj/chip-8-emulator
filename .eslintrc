@@ -7,7 +7,7 @@
       "warn",
       {
         "singleQuote": true,
-        "printWidth": 150
+        "printWidth": 120
       }
     ],
     "arrow-parens": [1, "as-needed"],
