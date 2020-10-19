@@ -14,12 +14,12 @@ const loadRom = file => {
   });
 };
 
-const formatHex = (value, { digits, prefix = false }) => {
+const formatHex = (value, { digits, prefix = false } = {}) => {
   const PREFIX = '0x';
   const MISSING_DIGIT_REPLACEMENT = '0';
 
   const rawHex = value.toString(16);
-  const missingDigits = MISSING_DIGIT_REPLACEMENT.repeat(digits - rawHex.length);
+  const missingDigits = MISSING_DIGIT_REPLACEMENT.repeat(digits ? digits - rawHex.length : 0);
 
   if (prefix) return `${PREFIX}${missingDigits}${rawHex}`;
 

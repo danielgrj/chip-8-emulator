@@ -14,5 +14,6 @@ input.addEventListener('change', async event => {
   const [file] = event.target.files;
 
   const rom = await loadRom(file);
-  disassembler(rom);
+  const instructions = disassembler(rom);
+  console.log(instructions);
 });
