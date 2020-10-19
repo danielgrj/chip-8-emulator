@@ -11,11 +11,12 @@ module.exports = {
     filename: '[contenthash].bundle.js',
   },
   resolve: {
-    modules: ['node_modules'],
+    modules: ['node_modules', path.join(__dirname, 'src')],
     extensions: ['.js', '.ts', '.json'],
   },
   devServer: {
-    contentBase: './dist',
+    contentBase: path.join(__dirname, './public'),
+    historyApiFallback: true,
   },
   devtool: 'eval-cheap-module-source-map',
   module: {
